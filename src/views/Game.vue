@@ -1,69 +1,42 @@
 <template>
   <section class="section" id="calibrate">
     <div class="container">
-      <Display ref="display" v-bind:prompt="prompt" v-bind:signImagePath="signImagePath" v-on:timerComplete="timerComplete" />
-      <ul>
-        <GamePlayer v-for="playerSensor in playerSensors" v-bind:key="playerSensor.sensorId" v-bind:playerSensor="playerSensor"></GamePlayer>
-      </ul>
+      <Display ref="display" v-bind:prompt="prompt" v-on:timerComplete="timerComplete" />
+      <div class="container">
+        <ul>
+          <GamePlayer v-for="playerSensor in playerSensors" v-bind:key="playerSensor.sensorId" v-bind:playerSensor="playerSensor"></GamePlayer>
+        </ul>
+      </div>
     </div>
   </section>
 </template>
 
 <script>
 import { mapState } from 'vuex';
+import MovingAverage from 'moving-average';
 import Display from '../components/Display.vue'
 import GamePlayer from '../components/GamePlayer.vue'
 
 const maxSpeed = 100;
 const gameLoopIntervalFrequency = 100;
-const speedLimitExceedToleranceMultiplier = 2;
-const penaltyPointIncrement = 3;
-const roadConditionDurationSeconds = 10;
+const movingAverageTimeInterval = 1500;
 
 const steps = {
   start: {
     id: 'start',
     prompt: 'Get Ready!',
-    time: 3
+    time: 10 
+  },
+  game: {
+    id: 'game',
+    prompt: 'Go!',
+    time: 30
   },
   complete: {
     id: 'complete',
     prompt: 'Game Complete'
   }
 };
-
-const roadConditions = [
-  {
-    id: 'motorway',
-    prompt: 'Motorway',
-    speedLimit: 70,
-    signImagePath: 'svg/sign-70.svg'
-  },
-  {
-    id: 'dual-carriageway',
-    prompt: 'Dual Carriageway',
-    speedLimit: 50,
-    signImagePath: 'svg/sign-50.svg'
-  },
-  {
-    id: 'residential',
-    prompt: 'Residential',
-    speedLimit: 30,
-    signImagePath: 'svg/sign-30.svg'
-  },
-  {
-    id: 'school',
-    prompt: 'School',
-    speedLimit: 20,
-    signImagePath: 'svg/sign-20.svg'
-  },
-  {
-    id: 'race-track',
-    prompt: 'Race Track',
-    speedLimit: maxSpeed,
-    signImagePath: 'src/sign-100.svg'
-  }
-];
 
 export default {
   name: 'Game',
@@ -73,12 +46,10 @@ export default {
   },
   data() {
     return {
-      prompt: '',
-      signImagePath: '',
+      prompt: 'PROMPT',
       time: 0,
       playerSensors: [],
       hasStarted: false,
-      roadCondition: undefined,
       gameLoopIntervalId: 0
     }
   },
@@ -97,81 +68,77 @@ export default {
         if (playerSensor.sensorId == sensorId) {
           playerSensor.acceleration =  Math.max(Math.abs(x), Math.abs(y));
           var accelerationRatio = playerSensor.acceleration / playerSensor.maxAcceleration;
-          playerSensor.speed = parseInt(Math.min(maxSpeed, accelerationRatio * maxSpeed));
+          // playerSensor.speed = parseInt(Math.min(maxSpeed, accelerationRatio * maxSpeed));
+          var speed = parseInt(Math.min(maxSpeed, accelerationRatio * maxSpeed));
+          playerSensor.movingAverage.push(Date.now(), speed);
+          playerSensor.speed = parseInt(playerSensor.movingAverage.movingAverage());
         }
       });
     }
   },
   methods: {
     gameLoop() {
-      var vm = this;
-      var speedDifference;
       this.playerSensors.forEach(playerSensor => {
         if (!playerSensor.active) {
           return;
         }
-        playerSensor.score += playerSensor.speed;
-        speedDifference = playerSensor.speed - vm.roadCondition.speedLimit;
-        if (speedDifference > 0) {
-          playerSensor.speedLimitExceededCount += speedDifference;
-          console.log(playerSensor.speedLimitExceededCount, vm.roadCondition.speedLimit);
-          if (playerSensor.speedLimitExceededCount > (vm.roadCondition.speedLimit * speedLimitExceedToleranceMultiplier)) {
-            playerSensor.active = false;
-            playerSensor.penaltyPoints += penaltyPointIncrement;
-          }
+        if (this.hasStarted) {
+          playerSensor.score += playerSensor.speed;
         }
       });
     },
-    resetPlayersForRoadCondition() {
+    resetPlayerSensors() {
       this.playerSensors.forEach(playerSensor => {
         playerSensor.active = true;
-        playerSensor.speedLimitExceededCount=0;
       });
     },
     countdownFrom(time) {
       this.$refs.display.countdownFrom(time);
     },
-    setRoadCondition(roadCondition) {
-      this.roadCondition = roadCondition;
-      this.resetPlayersForRoadCondition();
-      this.prompt = roadCondition.prompt;
-      this.signImagePath = roadCondition.signImagePath;
-      // this.countdownFrom(Math.ceil(Math.random() * roadConditionDurationSeconds));
-      this.countdownFrom(roadConditionDurationSeconds);
+    timerComplete() {
+      if (this.step.id == 'start') {
+        this.step = steps.game;
+        this.prompt = this.step.prompt;
+      } else if (this.step.id == 'game') {
+        this.hasStarted = false;
+        this.step = steps.complete;
 
-      var vm = this;
+        var winner = this.playerSensors[0];
+        if (this.playerSensors.length > 1) {
+          winner = this.playerSensors[0].score > this.playerSensors[1].score ? this.playerSensors[0] : this.playerSensors[1];
+        }
+        this.prompt = winner.playerName + " wins!";
+
+        return;
+      }
+
+      this.resetPlayerSensors();
+
+      this.countdownFrom(this.step.time);
+      var _this = this;
       clearInterval(this.gameLoopIntervalId);
       this.gameLoopIntervalId = setInterval(() => {
-        vm.gameLoop();
+        _this.gameLoop();
       }, gameLoopIntervalFrequency);
-    },
-    randomRoadCondition() {
-      var randomIndex = Math.floor(Math.random()*roadConditions.length);
-      var roadCondition = roadConditions[randomIndex];
-      this.setRoadCondition(roadCondition);
-    },
-    timerComplete() {
-      if (!this.hasStarted) {
-        this.hasStarted = true;
-      }
-      this.randomRoadCondition();
     }
   },
   created() {
     this.playerSensors = this.playerSensorIds.map((playerSensorId, index) => ({
       playerNo: index + 1,
+      playerName: this.$store.state.playerNames[index],
       sensorId: playerSensorId,
       active: false,
       score: 0,
-      penaltyPoints: 0,
       acceleration: 0,
       maxAcceleration: this.$store.state.sensorMaxAcceleration[playerSensorId],
       speed: 0,
-      speedLimitExceededCount: 0
+      movingAverage: MovingAverage(movingAverageTimeInterval)
     }));
   },
   mounted() {
-    this.prompt = steps.start.prompt;
+    this.hasStarted = true;
+    this.step = steps.start;
+    this.prompt = this.step.prompt;
     // this accesses this.$refs which are not available during 'created'
     this.countdownFrom(steps.start.time);
   }

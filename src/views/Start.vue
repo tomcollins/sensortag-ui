@@ -1,10 +1,7 @@
 <template>
   <section class="section" id="start">
     <div class="container">
-        <h1 class="title">Main Menu</h1>
-        <h2 class="subtitle">
-          Get ready to start a one or two player game.
-        </h2>
+        <h1 class="title">Select Players</h1>
         <PlayerSensorList v-bind:playerSensorIds="playerSensorIds" startMessage="Press button to start game"></PlayerSensorList>
     </div>
   </section>
@@ -30,7 +27,7 @@ export default {
   sockets: {
     BUTTON_PRESS(sensorId) {
       console.log('BUTTON_PRESS', sensorId);
-      // should this use local computed state???
+      // shouldv this use local computed state???
       var startGame = this.$store.state.playerSensorIds.includes(sensorId);
       this.$store.commit('registerPlayer', sensorId);
       if (startGame) {
@@ -51,5 +48,9 @@ export default {
 <style>
   #start {
     margin-top: 16px;
+  }
+  #start .title {
+    font-size: 3.8em;
+    font-weight: bold;
   }
 </style>

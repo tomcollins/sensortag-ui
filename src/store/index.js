@@ -11,13 +11,14 @@ Vue.use(Vuex)
 
 // const debug = process.env.NODE_ENV !== 'production'
 
-const defaultMaxAcceleration = 2;
+const defaultMaxAcceleration = 5.6;
 
 export default new Vuex.Store({
   state: {
     isConnected: false,
     sensorIds: [],
     playerSensorIds: [],
+    playerNames: ['Tom', 'Player 2'],
     sensorMaxAcceleration: {}
   },
   plugins: [createSocketioPlugin('http://localhost:3000')],

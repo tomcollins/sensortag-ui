@@ -2,7 +2,7 @@
   <nav class="navbar is-fixed-top has-background-dark" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
       <router-link to="/" class="navbar-item has-text-white">
-        <strong>Scalextric UI</strong>
+        <strong>SensorTag UI</strong>
       </router-link>
     </div>
 
@@ -14,11 +14,6 @@
     </div> -->
 
     <div class="navbar-menu">
-      <div class="navbar-start">
-        <router-link to="/" class="navbar-item has-text-white">
-          Main Menu
-        </router-link>
-      </div>
 
       <div class="navbar-end">
         <div class="navbar-item">

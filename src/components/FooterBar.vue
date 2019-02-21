@@ -50,11 +50,11 @@ export default {
 </script>
 
 <style>
-  #connectivity-status-sensors {
+/*  #connectivity-status-sensors {
     position: absolute;
     top: 10px;
     left: 8px;
-  }
+  }*/
   #connectivity-status-sensors ul {
     margin: 0;
     padding: 0;
@@ -68,6 +68,7 @@ export default {
     height: 32px;
     border-radius: 5px;
     text-align: center;
+    margin-right: 10px;
   }
   #connectivity-status-sensors li p {
     padding: 5px 2px;

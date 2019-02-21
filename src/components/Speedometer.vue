@@ -7,7 +7,7 @@
           <circle class="circle-high circle range" cx="50%" :cy=circleY stroke="#E04644"></circle>
           <circle class="circle-mask circle" cx="50%" :cy=circleY stroke="#ff0000"></circle>
           <circle class="circle-outline-ends circle circle-outline" cx="50%" :cy=circleY></circle>
-          <circle class="X" cx="50%" :cy=circleY r="30" fill="red"></circle>
+          <!-- <circle class="X" cx="50%" :cy=circleY r="30" fill="red"></circle> -->
       </svg>
 <!--       <svg class="speedometer-needle" xmlns="http://www.w3.org/2000/svg">
         <g class="speedometer-needle-g">
@@ -30,8 +30,8 @@ const semi_cf = cf / 2;
 const semi_cf_1by3 = semi_cf / 3;
 const semi_cf_2by3 = semi_cf_1by3 * 2;
 
-var needleTween;
-var currentRotation;
+
+// var currentRotation;
 const tweenDuration = 100;
 
 const updateCircles = () => {
@@ -43,7 +43,9 @@ const updateCircles = () => {
 }
 
 const setStrokeDashArray = (selector, value) => {
-  document.querySelector(selector).setAttribute('stroke-dasharray', value);
+  document.querySelectorAll(selector).forEach(item => {
+    item.setAttribute('stroke-dasharray', value);
+  });
 }
 
 const addStroke = ()  => {
@@ -54,14 +56,14 @@ const addStroke = ()  => {
   setStrokeDashArray('.circle-outline-ends', 2 + "," + (semi_cf - 2));
 }
 
-const setNeedleRotation = (value) => {
-  console.log('setNeedleRotation', value);
-  var needle =  document.querySelector(".speedometer-needle");
+const setNeedleRotation = (value, element) => {
+  // console.log('setNeedleRotation', value);
+  var needle =  element.querySelector(".speedometer-needle");
   needle.style.transform = 'rotate(' + value + 'deg)';
 };
 
-const setPercentage = (percentage) => {
-  var mask = document.querySelector(".circle-mask");
+const setPercentage = (percentage, component) => {
+  var mask = component.$el.querySelector(".circle-mask");
   // var meter_value = semi_cf - ((percentage * semi_cf) / 100);
   // mask.setAttribute("stroke-dasharray", meter_value + "," + cf);
 
@@ -69,25 +71,25 @@ const setPercentage = (percentage) => {
     percentage: percentage,
     degrees: 270 + ((percentage * 180) / 100)
   };
-  
-  if (currentRotation == undefined) {
-    setNeedleRotation(targetRotation);
-    currentRotation = {
+
+  if (component.currentRotation == undefined) {
+    setNeedleRotation(targetRotation, component.$el);
+    component.currentRotation = {
       percentage: percentage,
       degrees: targetRotation.degrees
     };
-  } else if (currentRotation.percentage != targetRotation.percentage) {
-    if (needleTween) {
-      needleTween.stop();
+  } else if (component.currentRotation.percentage != targetRotation.percentage) {
+    if (component.needleTween) {
+      component.needleTween.stop();
     }
 
-    needleTween = new TWEEN.Tween(currentRotation) // Create a new tween that modifies 'coords'.
+    component.needleTween = new TWEEN.Tween(component.currentRotation)
           .to(targetRotation, tweenDuration)
           .easing(TWEEN.Easing.Quadratic.Out)
           .onUpdate(function() {
-            var meter_value = semi_cf - ((currentRotation.percentage * semi_cf) / 100);
+            var meter_value = semi_cf - ((component.currentRotation.percentage * semi_cf) / 100);
             mask.setAttribute("stroke-dasharray", meter_value + "," + cf);
-            setNeedleRotation(currentRotation.degrees);
+            setNeedleRotation(component.currentRotation.degrees, component.$el);
           })
           .start();
   }
@@ -103,7 +105,9 @@ export default {
   props: ['speed'],
   data: () => {
     return {
-      circleY: '30px'
+      circleY: '30px',
+      needleTween: null,
+      currentRotation: null
     }
   },
   watch: {
@@ -113,7 +117,7 @@ export default {
         if (!this.$el) {
           return;
         }
-        setPercentage(parseInt((newValue/maxSpeed)*maxSpeed));
+        setPercentage(parseInt((newValue/maxSpeed)*maxSpeed), this);
       }
     }
   },
@@ -121,7 +125,7 @@ export default {
     //updateMeter();
     updateCircles();
     addStroke();
-    setPercentage(0);
+    setPercentage(0, this);
   }
 }
 </script>
@@ -135,10 +139,10 @@ export default {
   width: 380px;
   height: 200px;
   /*margin: 50px auto;*/
-  border: 1px solid #333;
+  border: 0px solid #333;
 }
 .speedometer-svg {
-  border: 1px solid #00ff00;
+  border: 0px solid #00ff00;
   width: 100%; 
   height: 100%;
   transform: rotateX(180deg);
@@ -183,6 +187,6 @@ export default {
   /*orientation fix*/
   /*transform: rotate(270deg);*/
   
-  border: 1px solid #0000ff;
+  border: 0px solid #0000ff;
 }
 </style>

@@ -18,7 +18,7 @@ import Buefy from 'buefy'
 import 'buefy/dist/buefy.css'
 
 // IO
-// import io from 'socket.io-client';
+import io from 'socket.io-client';
 import VueSocketIO from 'vue-socket.io';
 
 // app
@@ -37,7 +37,12 @@ requestAnimationFrame(animate);
 Vue.use(Vuex);
 Vue.use(Buefy)
 // Vue.use(ElementUI);
-Vue.use(VueSocketIO, 'http://localhost:3000');
+
+const SocketInstance = io.connect('http://localhost:3000');
+Vue.use(new VueSocketIO({
+    // debug: true,
+    connection: SocketInstance
+}));
 
 Vue.config.productionTip = false
 

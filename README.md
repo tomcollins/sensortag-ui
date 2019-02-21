@@ -1,4 +1,4 @@
-# scalextric-ui
+# sensortag-ui
 
 ## Project setup
 ```
@@ -24,4 +24,4 @@ npm run test
 ```
 npm run lint
 ```
-# sensortag-ui
+

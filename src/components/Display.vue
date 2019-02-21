@@ -1,9 +1,7 @@
 <template>
-  <div class="container display has-background-grey-lighter">
+  <div class="container display">
     <p class="display-prompt">{{ prompt }}</p>
-    <div class="display-sign"><img :src="signImagePath"/></div>
-    <p class="display-time">{{ currentTime }}</p>
-    <p>{{ time }}</p>
+    <p class="display-time has-background-black has-text-white">{{ currentTime }}</p>
   </div>
 </template>
 
@@ -14,7 +12,7 @@ const timerIntervalDuration = 1000;
 
 export default {
   name: 'Display',
-  props: ['prompt', 'signImagePath'],
+  props: ['prompt'],
   data() {
     return {
       timeIntervalId: undefined,
@@ -71,7 +69,7 @@ export default {
   .display {
     margin: 16px 0;
     padding: 16px;
-    height: 260px;
+    height: 100px;
     text-align: center;
   }
   .display-prompt {
@@ -86,6 +84,7 @@ export default {
   .display-time {
     font-size: 3.8em;
     font-weight: bold;
+    width: 90px;
     margin: 0;
     padding: 0;
     position: absolute;

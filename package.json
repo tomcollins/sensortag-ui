@@ -1,5 +1,5 @@
 {
-  "name": "scalextric-ui",
+  "name": "sensortag-ui",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -8,31 +8,31 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "@babel/core": "^7.1.2",
-    "@fortawesome/fontawesome-svg-core": "^1.2.6",
-    "@fortawesome/free-solid-svg-icons": "^5.4.1",
-    "@fortawesome/vue-fontawesome": "^0.1.1",
-    "buefy": "^0.7.0",
-    "element-ui": "^2.4.8",
+    "@babel/core": "^7.3.3",
+    "@fortawesome/fontawesome-svg-core": "^1.2.15",
+    "@fortawesome/free-solid-svg-icons": "^5.7.2",
+    "@fortawesome/vue-fontawesome": "^0.1.5",
+    "buefy": "^0.7.2",
+    "element-ui": "^2.5.4",
     "i": "^0.3.6",
     "moving-average": "^1.0.0",
-    "npm": "^6.4.1",
-    "socket.io": "^2.1.1",
-    "socket.io-client": "^2.1.1",
+    "npm": "^6.8.0",
+    "socket.io": "^2.2.0",
+    "socket.io-client": "^2.2.0",
     "uws": "^10.148.1",
-    "vue": "^2.5.17",
-    "vue-router": "^3.0.1",
-    "vue-socket.io": "^2.1.1-b",
-    "vuex": "^3.0.1",
+    "vue": "^2.6.6",
+    "vue-router": "^3.0.2",
+    "vue-socket.io": "^3.0.5",
+    "vuex": "^3.1.0",
     "vuex-socketio-plugin": "^0.1.0"
   },
   "devDependencies": {
     "@tweenjs/tween.js": "^17.2.0",
-    "@vue/cli-plugin-babel": "^3.0.5",
-    "@vue/cli-plugin-eslint": "^3.0.5",
-    "@vue/cli-service": "^3.0.5",
-    "vue-cli-plugin-element": "^1.0.0",
-    "vue-template-compiler": "^2.5.17"
+    "@vue/cli-plugin-babel": "^3.4.0",
+    "@vue/cli-plugin-eslint": "^3.4.0",
+    "@vue/cli-service": "^3.4.0",
+    "vue-cli-plugin-element": "^1.0.1",
+    "vue-template-compiler": "^2.6.6"
   },
   "eslintConfig": {
     "root": true,
